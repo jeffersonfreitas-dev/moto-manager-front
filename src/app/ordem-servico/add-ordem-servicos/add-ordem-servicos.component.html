@@ -1,0 +1,264 @@
+<app-loading [loading]="loading"></app-loading>
+
+<form action="" #formValidate="ngForm" *ngIf="!loading">
+  <alert-message
+    *ngIf="isErroAlert"
+    destaq="Ocorreu um erro!"
+    [message]="alertMensagem"
+  ></alert-message>
+
+  <alert-message-success
+    *ngIf="isSuccessAlert"
+    destaq="Sucesso!"
+    [message]="alertMensagem"
+  ></alert-message-success>
+
+  <div class="row">
+    <div class="form-group col-12 col-sm-6 col-md-3 col-lg-2">
+      <label for="data" class="col-form-label">Data</label>
+      <span class="mot-span-validate" *ngIf="dataValidade.invalid">*</span>
+      <input
+        type="text"
+        class="form-control"
+        id="data"
+        #dataValidade="ngModel"
+        name="data"
+        required
+        maskInput
+        mask="00/00/0000"
+        placeholder="DD/MM/AAAA"
+        [(ngModel)]="ordemServico.data"
+      />
+    </div>
+
+    <div class="form-group col-12 col-sm-6 col-md-3 col-lg-3">
+      <label for="mecanico" class="col-form-label">Mecânico</label>
+      <span class="mot-span-validate">*</span>
+      <select
+        class="form-select"
+        [(ngModel)]="ordemServico.mecanico"
+        required
+        name="ordemServico.mecanico"
+      >
+        <option value="">Selecione...</option>
+        <option
+          *ngFor="let mecanico of listMecanicos"
+          [ngValue]="mecanico.uuid"
+        >
+          {{ mecanico.nome }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group col-12 col-sm-12 col-md-6 col-lg-7">
+      <label for="cliente" class="col-form-label">Cliente</label>
+      <span class="mot-span-validate">*</span>
+      <div class="d-flex d-flex-row">
+        <input
+          type="text"
+          class="form-control"
+          id="nomeClienteSelecionado"
+          placeholder="Clique no botão ao lado para pesquisar o cliente."
+          name="nomeClienteSelecionado"
+          disabled="true"
+          [(ngModel)]="nomeClienteSelecionado"
+        />
+        <a
+          title="Pesquisar"
+          class="btn btn-outline-secondary mot-icon"
+          data-bs-toggle="modal"
+          data-bs-target="#modalPesquisaCliente"
+          (click)="onOpenModalPesquisaCliente()"
+        >
+          <i class="fa fa-search"></i
+        ></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <input
+      type="hidden"
+      [(ngModel)]="ordemServico.veiculo"
+      required
+      name="ordemServico.veiculo"
+    />
+  </div>
+
+  <div class="row mt-2" *ngIf="mostrarVeiculos">
+    <div class="form-group col-md-12">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th class="col-sm-2 col-lg-2">Placa</th>
+            <th class="col-sm-2 col-lg-2">Cor</th>
+            <th class="col-sm-3 col-lg-5">Modelo</th>
+            <th class="col-sm-3 col-lg-2">Marca</th>
+            <th class="col-sm-1 col-lg-1">Selecione</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let veiculo of veiculosClienteSelecionado; let j = index">
+            <td>{{ veiculo.placa }}</td>
+            <td>{{ veiculo.cor }}</td>
+            <td>{{ veiculo.modelo.nome }}</td>
+            <td>{{ veiculo.modelo.marca.nome }}</td>
+            <td>
+              <div>
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="options-outlined"
+                  id="danger-secondary{{ j }}"
+                  (click)="onSelectVeiculo(veiculo.uuid)"
+                />
+                <label
+                  class="btn btn-outline-secondary"
+                  for="danger-secondary{{ j }}"
+                  style="padding: 2px 6px 2px 6px"
+                  >Selecionar</label
+                >
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="veiculosClienteSelecionado.length === 0" colspan="3">
+            <td colspan="5">
+              <span class="fst-italic">Nenhum veiculo para exibir</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-12">
+      <label for="defeito" class="col-form-label">Defeito</label>
+      <span class="mot-span-validate" *ngIf="defeitoValidade.invalid">*</span>
+      <textarea
+        placeholder="Digite aqui os defeitos e problemas relatados pelo cliente"
+        rows="3"
+        #defeitoValidade="ngModel"
+        type="text"
+        class="form-control"
+        id="defeito"
+        maxlength="250"
+        required
+        name="defeito"
+        [(ngModel)]="ordemServico.defeito"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-12">
+      <label for="observacao" class="col-form-label">Observações</label>
+      <textarea
+        placeholder="Digite aqui as informações extras e observações da Ordem de Serviço"
+        rows="3"
+        type="text"
+        class="form-control"
+        id="observacao"
+        maxlength="250"
+        name="observacao"
+        [(ngModel)]="ordemServico.observacao"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="row mb-4 mt-2">
+    <div class="form-group">
+      <a
+        class="btn btn-secondary"
+        [routerLink]="['/lista-ordem-servicos']"
+        routerLinkActive="router-link-active"
+        >Cancelar/Sair</a
+      >
+      <button
+        class="btn btn-success "
+        style="margin-left: 5px"
+        [disabled]="formValidate.invalid"
+        (click)="create()"
+      >
+        Salvar
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- MODAL PESQUISA CLIENTE -->
+<form action="">
+  <div
+    class="modal fade"
+    id="modalPesquisaCliente"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Pesquisar clientes</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-12">
+              <input
+                type="text"
+                class="form-control"
+                id="recipient-name"
+                name="pesqComeCliente"
+                #nomeCliente
+                (keyup)="onBuscarCliente(nomeCliente.value)"
+                [(ngModel)]="pesqNomeCliente"
+                placeholder="Digite o nome do cliente"
+              />
+            </div>
+            <div class="row mt-3" *ngIf="listClientes.length > 0">
+              <div class="form-group col-md-12">
+                <table class="tabletable-hover">
+                  <thead>
+                    <tr>
+                      <th class="col-11 col-sm-11 col-md-11 col-lg-11"></th>
+                      <th class="col-1 col-sm-1 col-md-1 col-lg-1"></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngFor="let cliente of listClientes">
+                      <td>{{ cliente.nome }}</td>
+                      <td>
+                        <div class="mt-1">
+                          <a
+                            title="Selecionar"
+                            class="btn btn-sm btn-outline-secondary mot-icon"
+                            style="padding: 2px 6px 2px 6px"
+                            data-bs-dismiss="modal"
+                            (click)="onSelectCliente(cliente)"
+                          >
+                            Selecionar
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            #closeModal
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            (click)="onCloseModalPesquisa()"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

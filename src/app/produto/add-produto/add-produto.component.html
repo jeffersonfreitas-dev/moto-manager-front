@@ -1,0 +1,88 @@
+<app-loading [loading]="loading"></app-loading>
+
+<form action="" #formValidate="ngForm" *ngIf="!loading">
+  <input type="hidden" id="uuid" name="uuid" [(ngModel)]="produto.uuid" />
+
+  <alert-message
+    *ngIf="isErroAlert"
+    destaq="Ocorreu um erro!"
+    [message]="alertMensagem"
+  ></alert-message>
+
+  <alert-message-success
+    *ngIf="isSuccessAlert"
+    destaq="Sucesso!"
+    [message]="alertMensagem"
+  ></alert-message-success>
+
+  <div class="row">
+    <div class="form-group col-md-8">
+      <label for="nome" class="col-form-label">Produto</label>
+      <span class="mot-span-validate" *ngIf="nomeValidate.invalid">*</span>
+      <input
+        type="text"
+        #nomeValidate="ngModel"
+        class="form-control"
+        id="nome"
+        minlength="2"
+        maxlength="100"
+        name="nome"
+        required
+        [(ngModel)]="produto.nome"
+      />
+    </div>
+    <div class="form-group col-md-2">
+      <label for="med" class="col-form-label">MED</label>
+      <span class="mot-span-validate" *ngIf="medValidate.invalid">*</span>
+      <input
+        type="text"
+        #medValidate="ngModel"
+        class="form-control"
+        id="med"
+        minlength="3"
+        maxlength="3"
+        name="med"
+        required
+        [(ngModel)]="produto.med"
+      />
+    </div>
+    <div class="form-group col-md-2">
+      <label for="valor" class="col-form-label">Valor</label>
+      <span class="mot-span-validate" *ngIf="valorValidate.invalid">*</span>
+      <input
+        type="text"
+        #valorValidate="ngModel"
+        class="form-control"
+        id="valor"
+        matInput
+        mask="separator.2"
+        thousandSeparator="."
+        decimalMarker=","
+        [dropSpecialCharacters]="true"
+        name="valor"
+        required
+        placeholder="0,00"
+        [(ngModel)]="produto.valor"
+      />
+    </div>
+  </div>
+
+  <div class="row mt-2 mb-4">
+    <div class="form-group col-md-6">
+      <a
+        class="btn btn-secondary"
+        [routerLink]="['/lista-produto']"
+        routerLinkActive="router-link-active"
+        >Cancelar/Sair</a
+      >
+      <button
+        class="btn btn-success"
+        style="margin-left: 5px"
+        (click)="salvar()"
+        [disabled]="formValidate.invalid"
+      >
+        Salvar
+      </button>
+    </div>
+  </div>
+</form>

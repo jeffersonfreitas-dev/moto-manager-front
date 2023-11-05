@@ -1,0 +1,778 @@
+<app-loading [loading]="loading"></app-loading>
+
+<div *ngIf="!loading">
+  <alert-message
+    *ngIf="isErroAlert"
+    destaq="Ocorreu um erro!"
+    [message]="errorMessage"
+  ></alert-message>
+
+  <form action="" #formValidate="ngForm">
+    <input
+      type="hidden"
+      id="uuid"
+      name="uuid"
+      [(ngModel)]="ordemServico.uuid"
+    />
+    <div class="row alert alert-dark" style="padding-bottom: 0px">
+      <div class="form-group col-8 col-md-10">
+        <h1 class="text-start normalAdd">Ordem Serviço nº {{ ordemServico.codigo }}</h1>
+        <h1 class="text-start miniAdd">O.S nº {{ ordemServico.codigo }}</h1>
+      </div>
+      <div
+        class="form-group col-4 col-md-2 text-end"
+        *ngIf="ordemServico.status !== 'FECHADO'"
+      >
+        <h1 class="text-end">
+          {{ totalGeral | currency: "BRL" }}
+        </h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-2">
+        <label for="data" class="col-form-label">Data</label>
+        <h2 class="text-start">{{ ordemServico.data | date: "dd/MM/yyyy" }}</h2>
+      </div>
+
+      <div class="form-group col-md-2">
+        <label for="mecanico" class="col-form-label">Mecânico</label>
+        <h2 class="text-start">{{ ordemServico.mecanico.nome }}</h2>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="cliente" class="col-form-label">Cliente</label>
+        <h2 class="text-start">{{ ordemServico.cliente.nome }}</h2>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="placa" class="col-form-label">Placa</label>
+        <h2 class="text-start">{{ ordemServico.veiculo.placa }}</h2>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-12">
+        <label for="defeito" class="col-form-label">Defeito</label>
+        <h2 class="text-start">{{ ordemServico.defeito }}</h2>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="ordemServico.status === 'FECHADO'">
+      <div class="form-group col-md-12">
+        <label for="observacao" class="col-form-label">Observação</label>
+        <h2 class="text-start">{{ ordemServico.observacao }}</h2>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="ordemServico.status === 'FECHADO'">
+      <div class="form-group col-md-12">
+        <label for="pendenciasd" class="col-form-label">Pendencias</label>
+        <h2 class="text-start">{{ ordemServico.pendencias }}</h2>
+      </div>
+    </div>
+
+    <div
+      class="row"
+      style="padding-top: 2%; margin-bottom: -30px; position: relative"
+      *ngIf="ordemServico.status !== 'FECHADO'"
+    >
+      <div class="form-group col-md-6">
+        <a
+          title="Incluir Serviços"
+          class="btn btn-outline-secondary btn-sm"
+          data-bs-toggle="modal"
+          data-bs-target="#modalServico"
+          (click)="openModalServico()"
+        >
+          <i class="fa fa-plus"></i>
+          Serviços
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-12">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="col-7 col-sm-4 col-md-5 col-lg-5"></th>
+              <th class="col-2 col-sm-2 col-lg-2">Qtd</th>
+              <th class="hidden col-sm-2 col-lg-2">Valor</th>
+              <th class="col-sm-2 col-md-5 col-lg-5">Total</th>
+              <th class="col-2 col-sm-2 col-md-5 col-lg-5">.</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let servico of ordemServico.servicos; let i = index">
+              <td>{{ servico.servico.nome }}</td>
+              <td>{{ servico.quantidade }}</td>
+              <td class="hidden">{{ servico.valor | currency: "BRL" }}</td>
+              <td>
+                {{ servico.valor * servico.quantidade | currency: "BRL" }}
+              </td>
+              <td>
+                <btn-action-table
+                  title="Deletar"
+                  type="danger"
+                  icon="fa-trash"
+                  (click)="
+                    openDeleteModal(
+                      'servico',
+                      servico.servico.nome,
+                      servico.uuid,
+                      i
+                    )
+                  "
+                ></btn-action-table>
+              </td>
+            </tr>
+
+            <tr *ngIf="ordemServico.servicos.length <= 0">
+              <td colspan="5">
+                <span class="fst-italic">Nenhum serviço incluído</span>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              <td></td>
+              <td><span class="fw-bold">Total:</span></td>
+              <td>
+                <span class="fw-bold">
+                  {{ totalServicos | currency: "BRL" }}</span
+                >
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div
+      class="row"
+      style="padding-top: 1%; margin-bottom: -30px; position: relative"
+      *ngIf="ordemServico.status !== 'FECHADO'"
+    >
+      <div class="form-group col-md-6">
+        <a
+          title="Incluir Produtos"
+          class="btn btn-outline-secondary btn-sm"
+          data-bs-toggle="modal"
+          data-bs-target="#modalProduto"
+          (click)="openModalProduto()"
+        >
+          <i class="fa fa-plus"></i>
+          Produtos
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group col-md-12">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="col-7 col-sm-4 col-md-5 col-lg-5"></th>
+              <th class="col-2 col-sm-2 col-lg-2">Qtd</th>
+              <th class="hidden col-sm-2 col-lg-2">Valor</th>
+              <th class="col-sm-2 col-md-5 col-lg-5">Total</th>
+              <th class="col-2 col-sm-2 col-md-5 col-lg-5">.</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let produto of ordemServico.produtos; let i = index">
+              <td>{{ produto.produto.nome }}</td>
+              <td >{{ produto.quantidade }}</td>
+              <td class="hidden">{{ produto.valor | currency: "BRL" }}</td>
+              <td>
+                {{ produto.valor * produto.quantidade | currency: "BRL" }}
+              </td>
+              <td>
+                <btn-action-table
+                  title="Deletar"
+                  type="danger"
+                  icon="fa-trash"
+                  (click)="
+                    openDeleteModal(
+                      'produto',
+                      produto.produto.nome,
+                      produto.uuid,
+                      i
+                    )
+                  "
+                ></btn-action-table>
+              </td>
+            </tr>
+
+            <tr *ngIf="ordemServico.produtos.length <= 0">
+              <td colspan="5">
+                <span class="fst-italic">Nenhum produto incluído</span>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              <td></td>
+              <td>
+                <span class="fw-bold ">Total:</span>
+              </td>
+              <td>
+                <span class="fw-bold">{{
+                  totalProdutos | currency: "BRL"
+                }}</span>
+              </td>
+              <td></td>
+            </tr>
+
+            <tr *ngIf="ordemServico.status === 'FECHADO'">
+              <td></td>
+              <td></td>
+              <td><span class="fw-bold">Total acréscimos:</span></td>
+              <td>
+                <span class="fw-bold">{{
+                  ordemServico.acrescimos | currency: "BRL"
+                }}</span>
+              </td>
+              <td></td>
+            </tr>
+            <tr *ngIf="ordemServico.status === 'FECHADO'">
+              <td></td>
+              <td></td>
+              <td><span class="fw-bold">Total descontos:</span></td>
+              <td>
+                <span class="fw-bold">{{
+                  ordemServico.descontos | currency: "BRL"
+                }}</span>
+              </td>
+              <td></td>
+            </tr>
+            <tr *ngIf="ordemServico.status === 'FECHADO'">
+              <td></td>
+              <td></td>
+              <td><span class="fw-bold">Total geral:</span></td>
+              <td>
+                <span class="fw-bold">{{ totalGeral | currency: "BRL" }}</span>
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="ordemServico.status !== 'FECHADO'">
+      <div class="form-group col-md-12">
+        <label for="observacao" class="col-form-label">Observações</label>
+        <textarea
+          rows="3"
+          type="text"
+          class="form-control"
+          id="observacao"
+          name="observacao"
+          [(ngModel)]="ordemServico.observacao"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="row mt-2 mb-4 d-flex justify-content-around ">
+      <div class="form-group col-4 col-sm-3 col-md-2">
+        <button
+          class="btn btn-secondary"
+          style="margin-left: 5px"
+          [routerLink]="['/lista-ordem-servicos']"
+        >
+          Cancelar
+        </button>
+      </div>
+      <div class="form-group col-4 col-sm-3 col-md-2">
+        <button
+          *ngIf="ordemServico.status !== 'FECHADO'"
+          class="btn btn-secondary"
+          type="button"
+          style="margin-left: 5px"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#telaFechamento"
+          aria-controls="telaFechamento"
+          (click)="onOpenMovimentacao()"
+        >
+          Ações
+        </button>
+      </div>
+      <div class="form-group col-4 col-sm-3 col-md-2">
+        <button
+          *ngIf="ordemServico.status !== 'FECHADO'"
+          class="btn btn-success"
+          style="margin-left: 5px"
+          [disabled]="formValidate.invalid"
+          [routerLink]="['/lista-ordem-servicos']"
+          (click)="salvar()"
+        >
+          Salvar
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!--MODAL SERVIÇO-->
+<form action="" #formModalServicoValidate="ngForm">
+  <div
+    class="modal fade"
+    id="modalServico"
+    tabindex="-1"
+    aria-labelledby="modalServicoLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalServicoLabel">Incluir serviços</h3>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-12">
+              <input
+                type="text"
+                class="form-control"
+                id="recipient-name"
+                name="nomeServicoBusca"
+                [(ngModel)]="nomeServicoBusca"
+                (keyup)="onBuscarServico()"
+                placeholder="Digite o nome do serviço para pesquisar"
+              />
+            </div>
+          </div>
+          <app-loading [loading]="loadingModal"></app-loading>
+
+          <div class="row" *ngIf="nomeServicoBusca !== '' && !loadingModal">
+            <div class="form-group col-md-12">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th class="col-sm-1 col-lg-11"></th>
+                    <th class="col-sm-1 col-lg-1"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let servico of listServicos; let j = index">
+                    <td>{{ servico.nome }}</td>
+                    <td>
+                      <div>
+                        <input
+                          type="radio"
+                          class="btn-check"
+                          name="options-outlined"
+                          id="danger-secondary{{ j }}"
+                          (click)="onSelectServico(servico)"
+                        />
+                        <label
+                          class="btn btn-outline-secondary"
+                          for="danger-secondary{{ j }}"
+                          style="padding: 2px 6px 2px 6px"
+                          >Selecionar</label
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="listServicos.length === 0">
+                    <td colspan="2">
+                      <span class="fst-italic">Nenhum serviço localizado</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="row" *ngIf="showCadastroServico">
+            <div class="mb-6">
+              <label for="servqtd" class="col-form-label">Quantidade</label>
+              <span
+                class="mot-span-validate"
+                *ngIf="qtdModalServicoValidate.invalid"
+                >*</span
+              >
+              <input
+                type="number"
+                #qtdModalServicoValidate="ngModel"
+                class="form-control"
+                id="servqtd"
+                name="quantidadeServico"
+                required
+                min="0"
+                (blur)="calculaValorServico()"
+                [(ngModel)]="itemServico.quantidade"
+              />
+            </div>
+            <div class="mb-6">
+              <label for="servvlr" class="col-form-label">Valor</label>
+              <span
+                class="mot-span-validate"
+                *ngIf="valorModalServicoValidate.invalid"
+                >*</span
+              >
+              <input
+                type="tel"
+                min="0"
+                #valorModalServicoValidate="ngModel"
+                class="form-control"
+                id="servvlr"
+                matInput
+                mask="separator.2"
+                thousandSeparator="."
+                decimalMarker=","
+                name="valorServico"
+                required
+                placeholder="0,00"
+                (blur)="calculaValorServico()"
+                [(ngModel)]="itemServico.valor"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <h3 class="text-center">
+              Total do serviço: {{ valorTotalItemServico | currency: "BRL" }}
+            </h3>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Fechar
+          </a>
+          <button
+            *ngIf="
+              showCadastroServico &&
+              itemServico.quantidade > 0 &&
+              itemServico.valor > 0
+            "
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            (click)="incluirServico()"
+          >
+            Incluir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!--MODAL PRODUTO-->
+<form action="" #formModalProdutoValidate="ngForm">
+  <div
+    class="modal fade"
+    id="modalProduto"
+    tabindex="-1"
+    aria-labelledby="modalProdutoLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalProdutoLabel">Incluir produtos</h3>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-12">
+              <input
+                type="text"
+                class="form-control"
+                id="recipient-name"
+                name="nomeProdutoBusca"
+                [(ngModel)]="nomeProdutoBusca"
+                (keyup)="onBuscarProduto()"
+                placeholder="Digite o nome do produto para pesquisar"
+              />
+            </div>
+          </div>
+          <app-loading [loading]="loadingProdutoModal"></app-loading>
+
+          <div class="row" *ngIf="nomeProdutoBusca !== '' && !loadingProdutoModal">
+            <div class="form-group col-md-12">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th class="col-sm-1 col-lg-11"></th>
+                    <th class="col-sm-1 col-lg-1"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let produto of listProdutos; let k = index">
+                    <td>{{ produto.nome }}</td>
+                    <td>
+                      <div>
+                        <input
+                          type="radio"
+                          class="btn-check"
+                          name="options-outlined"
+                          id="danger-ondary{{ k }}"
+                          (click)="onSelectProduto(produto)"
+                        />
+                        <label
+                          class="btn btn-outline-secondary"
+                          for="danger-ondary{{ k }}"
+                          style="padding: 2px 6px 2px 6px"
+                          >Selecionar</label
+                        >
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="listProdutos.length === 0">
+                    <td colspan="2">
+                      <span class="fst-italic">Nenhum produto localizado</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="row" *ngIf="showCadastroProduto">
+            <div class="mb-6">
+              <label for="servqtd" class="col-form-label">Quantidade</label>
+              <span
+                class="mot-span-validate"
+                *ngIf="qtdModalProdutoValidate.invalid"
+                >*</span
+              >
+              <input
+                type="number"
+                #qtdModalProdutoValidate="ngModel"
+                class="form-control"
+                id="servqtd"
+                name="quantidadeProduto"
+                required
+                min="0"
+                (blur)="calculaValorProduto()"
+                [(ngModel)]="itemProduto.quantidade"
+              />
+            </div>
+            <div class="mb-6">
+              <label for="servvlr" class="col-form-label">Valor</label>
+              <span
+                class="mot-span-validate"
+                *ngIf="valorModalProdutoValidate.invalid"
+                >*</span
+              >
+              <input
+                type="tel"
+                min="0"
+                #valorModalProdutoValidate="ngModel"
+                class="form-control"
+                id="servvlr"
+                matInput
+                mask="separator.2"
+                thousandSeparator="."
+                decimalMarker=","
+                name="valorProduto"
+                required
+                placeholder="0,00"
+                (blur)="calculaValorProduto()"
+                [(ngModel)]="itemProduto.valor"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <h3 class="text-center">
+              Total do produto: {{ valorTotalItemProduto | currency: "BRL" }}
+            </h3>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Fechar
+          </a>
+          <button
+            *ngIf="
+              showCadastroProduto &&
+              itemProduto.quantidade > 0 &&
+              itemProduto.valor > 0
+            "
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            (click)="incluirProduto()"
+          >
+            Incluir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- OFFCANVAS FECHAMENTO -->
+<form action="">
+  <div
+    class="offcanvas offcanvas-end"
+    data-bs-scroll="true"
+    data-bs-backdrop="false"
+    tabindex="-1"
+    id="telaFechamento"
+    aria-labelledby="offcanvasScrollingLabel"
+  >
+    <div class="offcanvas-header">
+      <h3 class="offcanvas-title" id="offcanvasScrollingLabel">
+        Movimentação da OS nº {{ ordemServico.codigo }}
+      </h3>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+        (click)="fecharOffCanvasFechamento()"
+      ></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="row">
+        <label for="movimentacao" class="col-form-label"
+          >Opções:</label
+        >
+        <div class="btn-group">
+          <a
+            class="btn btn-outline-secondary"
+            [class.active]="statusEmMovimentacao === 'ABERTO'"
+            (click)="mudarStatus('ABERTO')"
+            >Aberto</a
+          >
+          <a
+            class="btn btn-outline-secondary"
+            [class.active]="statusEmMovimentacao === 'FECHADO'"
+            (click)="mudarStatus('FECHADO')"
+            >Finalizar</a
+          >
+          <a
+            class="btn btn-outline-secondary"
+            [class.active]="statusEmMovimentacao === 'PENDENTE'"
+            (click)="mudarStatus('PENDENTE')"
+            >Pendente</a
+          >
+        </div>
+      </div>
+
+      <!-- QUANDO FECHADO -->
+      <div *ngIf="statusEmMovimentacao === 'FECHADO'">
+        <div class="row mt-2">
+          <div class="form-group col-md-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="col-sm-4 col-lg-6">Resumo da movimentação</th>
+                  <th class="col-sm-2 col-lg-6"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>Total Serviços:</td>
+                  <td>{{ totalServicos | currency: "BRL" }}</td>
+                </tr>
+                <tr>
+                  <td>Total Produtos:</td>
+                  <td>{{ totalProdutos | currency: "BRL" }}</td>
+                </tr>
+                <tr>
+                  <td>Acréscimos:</td>
+                  <td>
+                    <input
+                      type="tel"
+                      min="0"
+                      class="form-control"
+                      id="acrescimo"
+                      matInput
+                      mask="separator.2"
+                      thousandSeparator="."
+                      decimalMarker=","
+                      name="acrescimo"
+                      placeholder="0,00"
+                      #acrescimo
+                      (keyup)="setaValorAcrescimo(acrescimo.value)"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Descontos:</td>
+                  <td>
+                    <input
+                      type="text"
+                      min="0"
+                      class="form-control"
+                      id="desconto"
+                      matInput
+                      mask="separator.2"
+                      thousandSeparator="."
+                      decimalMarker=","
+                      name="desconto"
+                      placeholder="0,00"
+                      #desconto
+                      (keyup)="setaValorDesconto(desconto.value)"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="fw-bold">Total Geral:</span></td>
+                  <td>
+                    <span class="fw-bold">{{
+                      subtotal | currency: "BRL"
+                    }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <!-- <h1>Test</h1> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- QUANDO PENDENTE -->
+      <div class="row" *ngIf="statusEmMovimentacao === 'PENDENTE'">
+        <div class="form-group col-md-12">
+          <label for="pendencia" class="col-form-label">Pendências:</label>
+          <textarea
+            rows="7"
+            type="text"
+            class="form-control"
+            id="pendencias"
+            name="pendencias"
+            [(ngModel)]="ordemServico.pendencias"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="form-group col-md-12">
+          <button
+            type="button"
+            data-bs-dismiss="offcanvas"
+            class="btn btn btn-secondary"
+            aria-label="Close"
+            (click)="fecharOffCanvasFechamento()"
+          >
+            Voltar
+          </button>
+          <button
+            *ngIf="subtotal >= 0"
+            class="btn btn-success"
+            data-bs-dismiss="offcanvas"
+            style="margin-left: 5px"
+            (click)="confirmarMovimentacao()"
+          >
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

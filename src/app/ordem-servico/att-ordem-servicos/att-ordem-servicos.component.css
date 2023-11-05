@@ -1,0 +1,19 @@
+@media(max-width: 599.98px) {
+    .normalAdd {
+        display: none;
+    }
+    .miniAdd {
+        display: block;
+    }
+    .hidden {
+        display: none;
+    }
+}
+@media(min-width: 600px) {
+    .normalAdd {
+        display: block;
+    }
+    .miniAdd {
+        display: none;
+    }
+}

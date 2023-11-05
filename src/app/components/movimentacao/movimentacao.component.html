@@ -1,0 +1,194 @@
+<form action="">
+  <div
+    class="offcanvas offcanvas-end"
+    data-bs-scroll="true"
+    data-bs-backdrop="false"
+    tabindex="-1"
+    id="{{ idComponent }}"
+    aria-labelledby="offcanvasScrollingLabel"
+  >
+    <div class="offcanvas-header">
+      <h3 class="offcanvas-title" id="offcanvasScrollingLabel">
+        Movimentação da OS nº {{ ordemServico.codigo }}
+      </h3>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+        (click)="fecharOffCanvasFechamento()"
+      ></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="row">
+        <label for="movimentacao" class="col-form-label"
+          >Opções de Movimentação:</label
+        >
+        <div class="btn-group">
+          <a
+            class="btn btn-outline-secondary"
+            [class.active]="statusEmMovimentacao === 'ABERTO'"
+            (click)="mudarStatus('ABERTO')"
+            >Aberto</a
+          >
+          <a
+            class="btn btn-outline-secondary"
+            [class.active]="statusEmMovimentacao === 'FECHADO'"
+            (click)="mudarStatus('FECHADO')"
+            >Finalizar</a
+          >
+          <a
+            class="btn btn-outline-secondary"
+            [class.active]="statusEmMovimentacao === 'PENDENTE'"
+            (click)="mudarStatus('PENDENTE')"
+            >Pendente</a
+          >
+        </div>
+      </div>
+
+      <!-- QUANDO FECHADO -->
+      <div *ngIf="statusEmMovimentacao === 'FECHADO'">
+        <div class="row mt-2">
+          <div class="form-group col-md-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="col-sm-4 col-lg-6">Resumo da movimentação</th>
+                  <th class="col-sm-2 col-lg-6"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>Total Serviços:</td>
+                  <td>{{ totalServicos | currency: "BRL" }}</td>
+                </tr>
+                <tr>
+                  <td>Total Produtos:</td>
+                  <td>{{ totalProdutos | currency: "BRL" }}</td>
+                </tr>
+                <tr>
+                  <td>Acréscimos:</td>
+                  <td>
+                    <input
+                      type="tel"
+                      min="0"
+                      class="form-control"
+                      id="acrescimo"
+                      matInput
+                      mask="separator.2"
+                      thousandSeparator="."
+                      decimalMarker=","
+                      name="acrescimo"
+                      placeholder="0,00"
+                      #acrescimo
+                      (change)="setaValorAcrescimo(acrescimo.value)"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Descontos:</td>
+                  <td>
+                    <input
+                      type="text"
+                      min="0"
+                      class="form-control"
+                      id="desconto"
+                      matInput
+                      mask="separator.2"
+                      thousandSeparator="."
+                      decimalMarker=","
+                      name="desconto"
+                      placeholder="0,00"
+                      #desconto
+                      (blur)="setaValorDesconto(desconto.value)"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="fw-bold">Total Geral:</span></td>
+                  <td>
+                    <span class="fw-bold">{{
+                      subtotal | currency: "BRL"
+                    }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-12">
+            <label for="formaPgto" class="col-form-label"
+              >Forma Pagamento</label
+            >
+            <select
+              class="form-select"
+              #escolha
+              (change)="selecionarTipoPgto(escolha.value)"
+            >
+              <option value="vista">A Vista</option>
+              <option value="prazo">A Prazo</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" *ngIf="exibeFormaPgtoVista">
+          <div class="form-group col-md-12">
+            <label for="formaPgto" class="col-form-label">Destino Pgto</label>
+            <select class="form-select">
+              <option value="">Selecione uma opção</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="exibeFormaPgtoPrazo">
+          <div class="form-group col-md-12">
+            <label for="formaPgto" class="col-form-label">Prazo Pgto</label>
+            <select class="form-select">
+              <option value="">Selecione uma opção</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUANDO PENDENTE -->
+      <div class="row" *ngIf="statusEmMovimentacao === 'PENDENTE'">
+        <div class="form-group col-md-12">
+          <label for="pendencia" class="col-form-label">Pendências:</label>
+          <textarea
+            rows="7"
+            type="text"
+            class="form-control"
+            id="pendencias"
+            name="pendencias"
+            [(ngModel)]="ordemServico.pendencias"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="form-group col-md-12">
+          <button
+            type="button"
+            data-bs-dismiss="offcanvas"
+            class="btn btn btn-secondary"
+            aria-label="Close"
+            (click)="fecharOffCanvasFechamento()"
+          >
+            Fechar
+          </button>
+          <button
+            *ngIf="subtotal >= 0"
+            class="btn btn-primary"
+            data-bs-dismiss="offcanvas"
+            style="margin-left: 5px"
+            (click)="confirmarMovimentacao()"
+          >
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

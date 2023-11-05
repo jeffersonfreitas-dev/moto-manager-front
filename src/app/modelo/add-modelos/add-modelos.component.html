@@ -1,0 +1,131 @@
+<app-loading [loading]="loading"></app-loading>
+
+<form action="" #formValidate="ngForm" *ngIf="!loading">
+  <input type="hidden" id="uuid" name="uuid" [(ngModel)]="modelo.uuid" />
+
+  <alert-message
+    *ngIf="isErroAlert"
+    destaq="Ocorreu um erro!"
+    [message]="alertMensagem"
+  ></alert-message>
+
+  <alert-message-success
+    *ngIf="isSuccessAlert"
+    destaq="Sucesso!"
+    [message]="alertMensagem"
+  ></alert-message-success>
+
+  <div class="row">
+    <div class="form-group col-md-8">
+      <label for="nome" class="col-form-label">Modelo</label>
+      <span class="mot-span-validate" *ngIf="nomeValidate.invalid">*</span>
+      <input
+        type="text"
+        #nomeValidate="ngModel"
+        class="form-control"
+        id="nome"
+        minlength="2"
+        maxlength="100"
+        name="nome"
+        required
+        [(ngModel)]="modelo.nome"
+      />
+    </div>
+
+    <div class="form-group col-md-4">
+      <label for="marca" class="col-form-label">Marca</label>
+      <span class="mot-span-validate">*</span>
+      <div class="d-flex flex-row">
+        <select class="form-select" required [(ngModel)]="marca" name="marca">
+          <option value="">Selecione uma marca</option>
+          <option *ngFor="let marc of listMarcas" [ngValue]="marc">
+            {{ marc.nome }}
+          </option>
+        </select>
+        <a
+          style="margin-left: 1%"
+          title="Cadastrar"
+          class="btn btn-outline-secondary mot-icon"
+          data-bs-toggle="modal"
+          data-bs-target="#modalMarca"
+          (click)="clearModalMarca()"
+        >
+          <i class="fa fa-plus"></i
+        ></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-2 mb-4">
+    <div class="form-group col-md-6">
+      <a
+        class="btn btn-secondary"
+        [routerLink]="['/lista-modelos']"
+        routerLinkActive="router-link-active"
+        >Cancelar/Sair</a
+      >
+      <button
+        type="button"
+        class="btn btn-success"
+        style="margin-left: 5px"
+        (click)="salvar()"
+        [disabled]="formValidate.invalid"
+      >
+        Salvar
+      </button>
+    </div>
+  </div>
+</form>
+
+<!--MODAL CADASTRO MARCAS-->
+<form action="" #formModalMarcaValidate="ngForm">
+  <div
+    class="modal fade"
+    id="modalMarca"
+    tabindex="-1"
+    aria-labelledby="modalMarcaLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalMarcaLabel">Incluir marca</h3>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="mb-12">
+              <input
+                type="text"
+                class="form-control"
+                id="recipient-name"
+                name="nomemarca"
+                required
+                [(ngModel)]="nomemarca"
+                placeholder="Digite o nome da marca"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <a
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            (click)="clearModalMarca()"
+          >
+            Fechar
+          </a>
+          <button
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            (click)="onIncluirMarca()"
+            [disabled]="formModalMarcaValidate.invalid"
+          >
+            Incluir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,29 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">Excluir registro</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <p>
+    <strong
+      >Você tem certeza que quer deletar o registro
+      <span class="text-primary">" {{ name }} "</span>?</strong
+    >
+  </p>
+  <p>
+    Se você clicar em sim o registro irá ser deletado do banco de dados.
+    <span class="text-danger">Essa operação não poderá ser desfeita.</span>
+  </p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="close()">
+    Cancelar
+  </button>
+  <button type="button" class="btn btn-danger" (click)="confirmar()">
+    Sim, deletar!
+  </button>
+</div>

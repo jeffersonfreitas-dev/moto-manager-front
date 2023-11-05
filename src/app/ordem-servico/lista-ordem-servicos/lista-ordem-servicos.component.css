@@ -1,0 +1,12 @@
+.pesquisa{
+    margin-bottom: 1rem;
+}
+.space {
+    margin-bottom: 0.5rem;
+}
+
+@media(max-width: 599.98px) {
+    .hidden {
+        display: none;
+    }
+}

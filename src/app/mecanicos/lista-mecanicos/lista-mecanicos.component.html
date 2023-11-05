@@ -1,0 +1,92 @@
+<app-loading [loading]="loading"></app-loading>
+
+<div *ngIf="!loading">
+  <alert-message
+    *ngIf="isErroAlert"
+    destaq="Ocorreu um erro!"
+    [message]="errorMessage"
+  ></alert-message>
+
+  <div class="row">
+    <form>
+      <div class="row  pesquisa">
+        <div class="col-8 col-sm-10 col-md-10 col-lg-10">
+          <input
+            type="text"
+            class="form-control"
+            id="filterName"
+            name="filterName"
+            [(ngModel)]="filterName"
+            (keyup)="filtrar()"
+            placeholder="Filtrar por nome do mecânico"
+          />
+        </div>
+        <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+          <button
+            type="button"
+            [routerLink]="['/add-mecanicos']"
+            routerLinkActive="router-link-active"
+            class="btn btn-dark mb-1"
+          >
+            Cadastrar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th class="col-8 col-sm-9 col-md-10  col-lg-10">Mecânicos</th>
+        <th class="col-4 col-sm-3 col-md-2   col-lg-2"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr
+        *ngFor="
+          let mecanico of mecanicos
+            | paginate
+              : {
+                  itemsPerPage: pagination.size,
+                  currentPage: pagination.pgNo,
+                  totalItems: pagination.total
+                };
+          let i = index
+        "
+      >
+        <td>{{ mecanico.nome }}</td>
+        <td>
+          <btn-action-table
+            title="Alterar"
+            type="info"
+            icon="fa-pencil"
+            [routerLink]="['/add-mecanicos', mecanico.uuid]"
+            routerLinkActive="router-link-active"
+          ></btn-action-table>
+
+          <btn-action-table
+            title="Deletar"
+            type="danger"
+            icon="fa-trash"
+            (click)="openDeleteModal(mecanico.nome, mecanico.uuid, i)"
+          ></btn-action-table>
+        </td>
+      </tr>
+      <tr *ngIf="mecanicos.length === 0">
+        <td colspan="2">
+          <span>Nenhum(a) mecânico(a) encontrado(a)</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="text-center mb-4" *ngIf="!loading">
+    <pagination-controls
+      (pageChange)="carregaPagina((pagination.pgNo = $event))"
+      previousLabel="Voltar"
+      nextLabel="Avançar"
+    >
+    </pagination-controls>
+  </div>
+</div>

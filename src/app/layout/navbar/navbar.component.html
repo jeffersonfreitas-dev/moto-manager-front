@@ -1,0 +1,135 @@
+<nav id="nnav" class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarTogglerDemo01"
+      aria-controls="navbarTogglerDemo01"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+      <a
+        class="navbar-brand"
+        [routerLink]="['/']"
+        routerLinkActive="router-link-active"
+        >MotoManager</a
+      >
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            aria-current="page"
+            [routerLink]="['/lista-ordem-servicos']"
+            routerLinkActive="router-link-active"
+            >Ordem Serviço</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="['/lista-clientes']"
+            routerLinkActive="router-link-active"
+            >Clientes</a
+          >
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Estoques
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/lista-produto']"
+                routerLinkActive="router-link-active"
+                >Produtos</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/lista-servicos']"
+                routerLinkActive="router-link-active"
+                >Serviços</a
+              >
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            onclick="alert('Módulo em desenvolvimento')"
+            routerLinkActive="router-link-active"
+            >Financeiro</a
+          >
+        </li>
+
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Outros
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/lista-marcas']"
+                routerLinkActive="router-link-active"
+                >Marcas</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/lista-mecanicos']"
+                routerLinkActive="router-link-active"
+                >Mecanicos</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/lista-modelos']"
+                routerLinkActive="router-link-active"
+                >Modelos</a
+              >
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="d-flex flex-row text-white">
+        <div style="margin-right: 10%; position: relative; margin-top: 5%">
+          <p>{{ username }}</p>
+        </div>
+        <div>
+          <a
+            title="Sair"
+            (click)="logout()"
+            class="btn btn-sm btn-outline-info mot-icon"
+          >
+            <i class="fa fa-sign-out"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
