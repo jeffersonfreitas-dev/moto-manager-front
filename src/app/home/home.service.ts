@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { CrudService } from '../shared/crud.service';
 import { HttpClient } from '@angular/common/http';
 
-const API = 'https://jeffersonfreitas.dev/motomanager/api/v1/home';
+const API = environment.apiURL.concat('/home');
 
 @Injectable({
   providedIn: 'root',
